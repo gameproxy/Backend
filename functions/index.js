@@ -7,9 +7,9 @@ exports.mentionUser = functions.database.ref("users/{uid}/chat/mentions/{mention
     var uid = context.params.uid;
     var mention = change.after.val();
 
-    console.log("[Mention] " + mention.from + " (" + mention.fromuser + ") mentioned UID " + uid + "saying: " + mention.message);
+    console.log("[Mention] UID " + mention.from + " (" + mention.fromuser + ") mentioned UID " + uid + "saying: " + mention.message);
 
-    var deviceTokens = await admin.database().ref("users/" + uid + "/chat/tokens");
+    var deviceTokens = await admin.database().ref("users/" + uid + "/chat/tokens").once("value");
     
     if (!deviceTokens.hasChildren()) {
         console.log("    - No devices to send notification to.");
@@ -19,7 +19,8 @@ exports.mentionUser = functions.database.ref("users/{uid}/chat/mentions/{mention
         var notificationPayload = {
             notification: {
                 title: mention.fromuser + " mentioned you!",
-                body: mention.message
+                body: mention.message,
+                icon: "https://gameproxy.host/media/Small.png"
             }
         };
 
