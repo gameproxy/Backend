@@ -5,6 +5,7 @@ admin.initializeApp();
 
 exports.mentionUser = functions.database.ref("users/{uid}/chat/mentions/{mentionID}").onWrite(async function(change, context) {
     var uid = context.params.uid;
+    var mentionID = context.params.mentionID;
     var mention = change.after.val();
 
     console.log("[Mention] UID " + mention.from + " (" + mention.fromuser + ") mentioned UID " + uid + "saying: " + mention.message);
@@ -20,7 +21,8 @@ exports.mentionUser = functions.database.ref("users/{uid}/chat/mentions/{mention
             notification: {
                 title: mention.fromuser + " mentioned you!",
                 body: mention.message,
-                icon: "https://gameproxy.host/media/Small.png"
+                icon: "https://gameproxy.host/media/Small.png",
+                click_action: "https://gameproxy.host/chat/console.html?mention=" + mentionID
             }
         };
 
