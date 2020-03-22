@@ -30,17 +30,19 @@ exports.mentionUser = functions.database.ref("users/{uid}/chat/mentions/{mention
         var notificationResponse = await admin.messaging().sendToDevice(deviceTokensArray, notificationPayload);
         var badDeviceTokens = [];
 
-        notificationResponse.forEach(function(result, index) {
-            var error = result.error;
-            
-            if (error) {
-                console.warn("    - A bad token has been found, and it may be removed due to error: ", error.code);
+        if (notificationResponse != null) {
+            notificationResponse.forEach(function(result, index) {
+                var error = result.error;
 
-                if (error.code == "messaging/invalid-registration-token" || error.code == "messaging/registration-token-not-registered") {
-                    badDeviceTokens.push(deviceTokens.ref.child(deviceTokensArray[index]).remove());
+                if (error) {
+                    console.warn("    - A bad token has been found, and it may be removed due to error: ", error.code);
+
+                    if (error.code == "messaging/invalid-registration-token" || error.code == "messaging/registration-token-not-registered") {
+                        badDeviceTokens.push(deviceTokens.ref.child(deviceTokensArray[index]).remove());
+                    }
                 }
-            }
-        });
+            });
+        }
 
         return Promise.all(tokensToRemove);
     }
